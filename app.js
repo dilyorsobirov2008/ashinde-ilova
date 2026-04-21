@@ -454,14 +454,15 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
 
   document.querySelectorAll('.nav-btn').forEach(el=>{
-    el.addEventListener('click',function(){
+    el.addEventListener('click',function(e){
       const pg=this.dataset.page;
       if(pg)goPage(pg);
     });
   });
 
   document.querySelectorAll('.drawer-link').forEach(el=>{
-    el.addEventListener('click',function(){
+    el.addEventListener('click',function(e){
+      e.preventDefault();
       const pg=this.dataset.page;
       if(pg)goPage(pg);
     });

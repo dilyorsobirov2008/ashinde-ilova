@@ -1,32 +1,43 @@
+const ICONS = {
+  all: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>',
+  phone: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>',
+  laptop: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="20" x2="22" y2="20"></line></svg>',
+  tablet: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>',
+  watch: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"></circle><polyline points="12 9 12 12 13.5 13.5"></polyline><path d="M16.51 17.35l-.35 3.83a2 2 0 0 1-2 1.82H9.83a2 2 0 0 1-2-1.82l-.35-3.83m.01-10.7l.35-3.83A2 2 0 0 1 9.83 1h4.35a2 2 0 0 1 2 1.82l.35 3.83"></path></svg>',
+  audio: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>',
+  plug: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-5"></path><path d="M9 8V2"></path><path d="M15 8V2"></path><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"></path></svg>',
+  tv: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>',
+};
+
 // DATA
 const CATEGORIES = [
-  {id:'barchasi',name:'Barchasi',icon:'🏪'},
-  {id:'smartfonlar',name:'Smartfonlar',icon:'📱'},
-  {id:'noutbuklar',name:'Noutbuklar',icon:'💻'},
-  {id:'planshetlar',name:'Planshetlar',icon:'📟'},
-  {id:'smartwatchlar',name:'Soatlar',icon:'⌚'},
-  {id:'naushniklar',name:'Audio',icon:'🎧'},
-  {id:'aksessuarlar',name:'Aksessuar',icon:'🔌'},
-  {id:'televizorlar',name:'TV',icon:'📺'},
+  {id:'barchasi',name:'Barchasi',icon:ICONS.all},
+  {id:'smartfonlar',name:'Smartfonlar',icon:ICONS.phone},
+  {id:'noutbuklar',name:'Noutbuklar',icon:ICONS.laptop},
+  {id:'planshetlar',name:'Planshetlar',icon:ICONS.tablet},
+  {id:'smartwatchlar',name:'Soatlar',icon:ICONS.watch},
+  {id:'naushniklar',name:'Audio',icon:ICONS.audio},
+  {id:'aksessuarlar',name:'Aksessuar',icon:ICONS.plug},
+  {id:'televizorlar',name:'TV',icon:ICONS.tv},
 ];
 
 const PRODUCTS = [
-  {id:1,name:'iPhone 15 Pro Max 256GB',cat:'smartfonlar',icon:'📱',price:17500000,old:19000000,brand:'Apple',specs:{RAM:'8GB',Xotira:'256GB',Ekran:'6.7"',Kamera:'48MP',Batareya:'4422mAh'},desc:'iPhone 15 Pro Max — Apple\'ning eng kuchli smartfoni. A17 Pro chip, titanium korpus va professional kamera tizimi.'},
-  {id:2,name:'Samsung Galaxy S24 Ultra',cat:'smartfonlar',icon:'📱',price:15900000,old:17500000,brand:'Samsung',specs:{RAM:'12GB',Xotira:'256GB',Ekran:'6.8"',Kamera:'200MP',Batareya:'5000mAh'},desc:'Galaxy S24 Ultra — Samsung\'ning flagman smartfoni. Built-in S Pen va AI funksiyalari bilan.'},
-  {id:3,name:'MacBook Pro 14" M3',cat:'noutbuklar',icon:'💻',price:28000000,old:null,brand:'Apple',specs:{Protsessor:'M3',RAM:'18GB',SSD:'512GB',Ekran:'14.2"',Batareya:'22 soat'},desc:'MacBook Pro M3 — professional ish uchun eng kuchli noutbuk.'},
-  {id:4,name:'Dell XPS 15 i7',cat:'noutbuklar',icon:'💻',price:22000000,old:25000000,brand:'Dell',specs:{Protsessor:'Intel i7-13700H',RAM:'16GB',SSD:'512GB',Ekran:'15.6" OLED',Batareya:'12 soat'},desc:'Dell XPS 15 — professional dizayn va yuqori unumdorlik.'},
-  {id:5,name:'iPad Pro 12.9" M2',cat:'planshetlar',icon:'📟',price:18500000,old:20000000,brand:'Apple',specs:{Chip:'M2',RAM:'8GB',Xotira:'256GB',Ekran:'12.9" Liquid Retina',Batareya:'10 soat'},desc:'iPad Pro — dunyodagi eng kuchli planshet.'},
-  {id:6,name:'Samsung Galaxy Tab S9',cat:'planshetlar',icon:'📟',price:12000000,old:null,brand:'Samsung',specs:{Protsessor:'Snapdragon 8 Gen 2',RAM:'8GB',Xotira:'128GB',Ekran:'11" AMOLED',Batareya:'8400mAh'},desc:'Galaxy Tab S9 — ish va o\'yin uchun eng yaxshi Android plansheti.'},
-  {id:7,name:'Apple Watch Series 9 45mm',cat:'smartwatchlar',icon:'⌚',price:6500000,old:7200000,brand:'Apple',specs:{Ekran:'1.9" OLED',Xotira:'64GB',GPS:'Ha',Suv:'WR50',Batareya:'18 soat'},desc:'Apple Watch Series 9 — salomatlik va fitness uchun eng yaxshi smart soat.'},
-  {id:8,name:'Samsung Galaxy Watch 6',cat:'smartwatchlar',icon:'⌚',price:4200000,old:null,brand:'Samsung',specs:{Ekran:'1.5" AMOLED',Xotira:'16GB',GPS:'Ha',Suv:'IP68',Batareya:'40 soat'},desc:'Galaxy Watch 6 — uzoq batareya va kuchli salomatlik sensori.'},
-  {id:9,name:'AirPods Pro 2',cat:'naushniklar',icon:'🎧',price:4800000,old:5500000,brand:'Apple',specs:{ANC:'Ha',Shaffoflik:'Ha',Batareya:'30 soat (keysda)',Chiqish:'3D audio',Suv:'IPX4'},desc:'AirPods Pro 2 — eng yaxshi shovqin bekor qiluvchi simsiz quloqchinlar.'},
-  {id:10,name:'Sony WH-1000XM5',cat:'naushniklar',icon:'🎧',price:3900000,old:4500000,brand:'Sony',specs:{ANC:'Ha',Batareya:'30 soat',Ulanish:'Bluetooth 5.2',Mikrofon:'8 ta',Og\'irligi:'250g'},desc:'Sony WH-1000XM5 — sanoatdagi eng yaxshi ANC texnologiyasi.'},
-  {id:11,name:'Samsung 65" QLED 4K TV',cat:'televizorlar',icon:'📺',price:14500000,old:16000000,brand:'Samsung',specs:{Ekran:'65" QLED',Ruxsat:'4K',HDR:'HDR10+',Smart:'Tizen OS',HDMI:'4x HDMI'},desc:'Samsung QLED — boy ranglar va keskin tasvir uchun premium televizor.'},
-  {id:12,name:'iPhone 14 128GB',cat:'smartfonlar',icon:'📱',price:10500000,old:12000000,brand:'Apple',specs:{RAM:'6GB',Xotira:'128GB',Ekran:'6.1"',Kamera:'12MP',Batareya:'3279mAh'},desc:'iPhone 14 — etarli unumdorlik va qulay narx.'},
-  {id:13,name:'Xiaomi 14 Pro',cat:'smartfonlar',icon:'📱',price:9800000,old:null,brand:'Xiaomi',specs:{RAM:'12GB',Xotira:'256GB',Ekran:'6.73" AMOLED',Kamera:'50MP Leica',Batareya:'4880mAh'},desc:'Xiaomi 14 Pro — Leica kamera bilan flagman tajribasi.'},
-  {id:14,name:'Anker USB-C Hub 7in1',cat:'aksessuarlar',icon:'🔌',price:380000,old:450000,brand:'Anker',specs:{Portlar:'7 ta',USB:'3x USB-A',HDMI:'4K@60Hz',SD:'Ha',PD:'100W'},desc:'Universal USB-C hub barcha qurilmalar uchun.'},
-  {id:15,name:'Baseus 65W Zaryadlovchi',cat:'aksessuarlar',icon:'🔌',price:220000,old:null,brand:'Baseus',specs:{Quvvat:'65W',Port:'USB-C + USB-A',GaN:'Ha',Compact:'Ha'},desc:'GaN texnologiyasi bilan tez zaryadlovchi.'},
-  {id:16,name:'Lenovo ThinkPad X1 Carbon',cat:'noutbuklar',icon:'💻',price:26000000,old:28000000,brand:'Lenovo',specs:{Protsessor:'Intel i7-1365U',RAM:'16GB',SSD:'512GB',Ekran:'14" IPS',Batareya:'15 soat'},desc:'Biznes noutbuklari orasida eng yaxshi tanlov.'},
+  {id:1,name:'iPhone 15 Pro Max 256GB',cat:'smartfonlar',icon:ICONS.phone,price:17500000,old:19000000,brand:'Apple',specs:{RAM:'8GB',Xotira:'256GB',Ekran:'6.7"',Kamera:'48MP',Batareya:'4422mAh'},desc:'iPhone 15 Pro Max — Apple\'ning eng kuchli smartfoni. A17 Pro chip, titanium korpus va professional kamera tizimi.'},
+  {id:2,name:'Samsung Galaxy S24 Ultra',cat:'smartfonlar',icon:ICONS.phone,price:15900000,old:17500000,brand:'Samsung',specs:{RAM:'12GB',Xotira:'256GB',Ekran:'6.8"',Kamera:'200MP',Batareya:'5000mAh'},desc:'Galaxy S24 Ultra — Samsung\'ning flagman smartfoni. Built-in S Pen va AI funksiyalari bilan.'},
+  {id:3,name:'MacBook Pro 14" M3',cat:'noutbuklar',icon:ICONS.laptop,price:28000000,old:null,brand:'Apple',specs:{Protsessor:'M3',RAM:'18GB',SSD:'512GB',Ekran:'14.2"',Batareya:'22 soat'},desc:'MacBook Pro M3 — professional ish uchun eng kuchli noutbuk.'},
+  {id:4,name:'Dell XPS 15 i7',cat:'noutbuklar',icon:ICONS.laptop,price:22000000,old:25000000,brand:'Dell',specs:{Protsessor:'Intel i7-13700H',RAM:'16GB',SSD:'512GB',Ekran:'15.6" OLED',Batareya:'12 soat'},desc:'Dell XPS 15 — professional dizayn va yuqori unumdorlik.'},
+  {id:5,name:'iPad Pro 12.9" M2',cat:'planshetlar',icon:ICONS.tablet,price:18500000,old:20000000,brand:'Apple',specs:{Chip:'M2',RAM:'8GB',Xotira:'256GB',Ekran:'12.9" Liquid Retina',Batareya:'10 soat'},desc:'iPad Pro — dunyodagi eng kuchli planshet.'},
+  {id:6,name:'Samsung Galaxy Tab S9',cat:'planshetlar',icon:ICONS.tablet,price:12000000,old:null,brand:'Samsung',specs:{Protsessor:'Snapdragon 8 Gen 2',RAM:'8GB',Xotira:'128GB',Ekran:'11" AMOLED',Batareya:'8400mAh'},desc:'Galaxy Tab S9 — ish va o\'yin uchun eng yaxshi Android plansheti.'},
+  {id:7,name:'Apple Watch Series 9 45mm',cat:'smartwatchlar',icon:ICONS.watch,price:6500000,old:7200000,brand:'Apple',specs:{Ekran:'1.9" OLED',Xotira:'64GB',GPS:'Ha',Suv:'WR50',Batareya:'18 soat'},desc:'Apple Watch Series 9 — salomatlik va fitness uchun eng yaxshi smart soat.'},
+  {id:8,name:'Samsung Galaxy Watch 6',cat:'smartwatchlar',icon:ICONS.watch,price:4200000,old:null,brand:'Samsung',specs:{Ekran:'1.5" AMOLED',Xotira:'16GB',GPS:'Ha',Suv:'IP68',Batareya:'40 soat'},desc:'Galaxy Watch 6 — uzoq batareya va kuchli salomatlik sensori.'},
+  {id:9,name:'AirPods Pro 2',cat:'naushniklar',icon:ICONS.audio,price:4800000,old:5500000,brand:'Apple',specs:{ANC:'Ha',Shaffoflik:'Ha',Batareya:'30 soat (keysda)',Chiqish:'3D audio',Suv:'IPX4'},desc:'AirPods Pro 2 — eng yaxshi shovqin bekor qiluvchi simsiz quloqchinlar.'},
+  {id:10,name:'Sony WH-1000XM5',cat:'naushniklar',icon:ICONS.audio,price:3900000,old:4500000,brand:'Sony',specs:{ANC:'Ha',Batareya:'30 soat',Ulanish:'Bluetooth 5.2',Mikrofon:'8 ta',Og\'irligi:'250g'},desc:'Sony WH-1000XM5 — sanoatdagi eng yaxshi ANC texnologiyasi.'},
+  {id:11,name:'Samsung 65" QLED 4K TV',cat:'televizorlar',icon:ICONS.tv,price:14500000,old:16000000,brand:'Samsung',specs:{Ekran:'65" QLED',Ruxsat:'4K',HDR:'HDR10+',Smart:'Tizen OS',HDMI:'4x HDMI'},desc:'Samsung QLED — boy ranglar va keskin tasvir uchun premium televizor.'},
+  {id:12,name:'iPhone 14 128GB',cat:'smartfonlar',icon:ICONS.phone,price:10500000,old:12000000,brand:'Apple',specs:{RAM:'6GB',Xotira:'128GB',Ekran:'6.1"',Kamera:'12MP',Batareya:'3279mAh'},desc:'iPhone 14 — etarli unumdorlik va qulay narx.'},
+  {id:13,name:'Xiaomi 14 Pro',cat:'smartfonlar',icon:ICONS.phone,price:9800000,old:null,brand:'Xiaomi',specs:{RAM:'12GB',Xotira:'256GB',Ekran:'6.73" AMOLED',Kamera:'50MP Leica',Batareya:'4880mAh'},desc:'Xiaomi 14 Pro — Leica kamera bilan flagman tajribasi.'},
+  {id:14,name:'Anker USB-C Hub 7in1',cat:'aksessuarlar',icon:ICONS.plug,price:380000,old:450000,brand:'Anker',specs:{Portlar:'7 ta',USB:'3x USB-A',HDMI:'4K@60Hz',SD:'Ha',PD:'100W'},desc:'Universal USB-C hub barcha qurilmalar uchun.'},
+  {id:15,name:'Baseus 65W Zaryadlovchi',cat:'aksessuarlar',icon:ICONS.plug,price:220000,old:null,brand:'Baseus',specs:{Quvvat:'65W',Port:'USB-C + USB-A',GaN:'Ha',Compact:'Ha'},desc:'GaN texnologiyasi bilan tez zaryadlovchi.'},
+  {id:16,name:'Lenovo ThinkPad X1 Carbon',cat:'noutbuklar',icon:ICONS.laptop,price:26000000,old:28000000,brand:'Lenovo',specs:{Protsessor:'Intel i7-1365U',RAM:'16GB',SSD:'512GB',Ekran:'14" IPS',Batareya:'15 soat'},desc:'Biznes noutbuklari orasida eng yaxshi tanlov.'},
 ];
 
 // STATE
@@ -121,7 +132,9 @@ function prodCard(p){
   const disc=p.old?Math.round((1-p.price/p.old)*100):0;
   return`<div class="prod-card" onclick="openProduct(${p.id})">
     ${disc?`<span class="sale-tag">-${disc}%</span>`:''}
-    <button class="fav-btn" onclick="event.stopPropagation();toggleFav(${p.id})" style="color:${isFav?'#ef4444':'#fff'}">${isFav?'❤️':'🤍'}</button>
+    <button class="fav-btn" onclick="event.stopPropagation();toggleFav(${p.id})" style="color:${isFav?'#ef4444':'#fff'}">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="${isFav?'currentColor':'none'}" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+    </button>
     <div class="prod-img">${p.icon}</div>
     <div class="prod-body">
       <div class="prod-name">${p.name}</div>
@@ -172,8 +185,13 @@ function openProduct(id){
       <div class="det-desc">${p.desc}</div>
       <div class="det-specs">${specs}</div>
       <div class="det-actions">
-        <button class="btn-cart-det" onclick="addToCart(${p.id})">${inCart?'✅ Savatda':'🛒 Savatga qo\'shish'}</button>
-        <button class="btn-fav-det${isFav?' liked':''}" id="det-fav-btn" onclick="toggleFav(${p.id});updateDetFav()">${isFav?'❤️':'🤍'}</button>
+        <button class="btn-cart-det" onclick="addToCart(${p.id})">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          ${inCart?'Savatda':'Savatga qo\'shish'}
+        </button>
+        <button class="btn-fav-det${isFav?' liked':''}" id="det-fav-btn" onclick="toggleFav(${p.id});updateDetFav()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="${isFav?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        </button>
       </div>
     </div>`;
   goPage('product');
@@ -182,7 +200,10 @@ function updateDetFav(){
   if(!state.currentProduct)return;
   const isFav=state.favs.includes(state.currentProduct.id);
   const btn=document.getElementById('det-fav-btn');
-  if(btn){btn.textContent=isFav?'❤️':'🤍';btn.className='btn-fav-det'+(isFav?' liked':'');}
+  if(btn){
+    btn.innerHTML=`<svg width="24" height="24" viewBox="0 0 24 24" fill="${isFav?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>`;
+    btn.className='btn-fav-det'+(isFav?' liked':'');
+  }
 }
 
 // CART

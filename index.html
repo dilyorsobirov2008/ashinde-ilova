@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <title>Ashinde – Elektronika Do'koni</title>
+  <meta name="description" content="Ashinde.uz – Smartfonlar, noutbuklar va boshqa texnikalar eng qulay narxlarda."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+
+
+<!-- APP -->
+<div id="app" class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <button class="icon-btn" id="menu-btn">&#9776;</button>
+    <div class="logo" id="logo-btn">ashinde<span class="dot">.</span></div>
+    <div class="header-right">
+      <button class="icon-btn" id="search-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <button class="icon-btn" id="cart-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        <span class="badge" id="cart-count">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- SEARCH BAR -->
+  <div class="search-wrap hidden" id="search-wrap">
+    <div class="search-inner">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search-input" placeholder="Mahsulot qidirish..."/>
+      <button id="search-close">✕</button>
+    </div>
+  </div>
+
+  <!-- DRAWER -->
+  <div class="overlay hidden" id="overlay"></div>
+  <aside class="drawer hidden" id="drawer">
+    <div class="drawer-top">
+      <div class="logo">ashinde<span class="dot">.</span></div>
+      <button class="icon-btn" id="drawer-close">✕</button>
+    </div>
+    <nav class="drawer-nav">
+      <a class="d-item active" data-page="home">🏠 Bosh sahifa</a>
+      <a class="d-item" data-page="catalog">📦 Katalog</a>
+      <a class="d-item" data-page="favorites">❤️ Sevimlilar</a>
+      <a class="d-item" data-page="cart">🛒 Savat</a>
+      <a class="d-item" data-page="orders">📋 Buyurtmalarim</a>
+    </nav>
+    <div class="drawer-bottom">
+      <a href="tel:+998975062020" class="contact-link">📞 +998 97 506 20 20</a>
+      <a href="https://t.me/ashinde_uz" class="contact-link" target="_blank">✈️ Telegram kanal</a>
+    </div>
+  </aside>
+
+  <!-- PAGES -->
+  <main class="main">
+
+    <!-- HOME -->
+    <div id="page-home" class="page active">
+      <div class="banner-wrap">
+        <div class="banner-track" id="banner-track">
+          <div class="banner-slide s1"><div class="b-text"><span class="b-tag">Yangi!</span><h2>Eng Yaxshi Smartfonlar</h2><p>3-6-12 oy muddatli to'lov</p><button class="btn-y" data-page="catalog" data-cat="smartfonlar">Ko'rish →</button></div><div class="b-emoji">📱</div></div>
+          <div class="banner-slide s2"><div class="b-text"><span class="b-tag">Aksiya!</span><h2>Noutbuklar Chegirmada</h2><p>Yetkazib berish bepul</p><button class="btn-y" data-page="catalog" data-cat="noutbuklar">Ko'rish →</button></div><div class="b-emoji">💻</div></div>
+          <div class="banner-slide s3"><div class="b-text"><span class="b-tag">Top!</span><h2>Smart Soatlar & Gadjetlar</h2><p>Katta tanlov, eng yaxshi narx</p><button class="btn-y" data-page="catalog" data-cat="aksessuarlar">Ko'rish →</button></div><div class="b-emoji">⌚</div></div>
+        </div>
+        <div class="banner-dots" id="banner-dots">
+          <span class="bdot active"></span><span class="bdot"></span><span class="bdot"></span>
+        </div>
+      </div>
+
+      <section class="sec">
+        <div class="sec-head"><h3>Kategoriyalar</h3><a data-page="catalog">Barchasi</a></div>
+        <div class="cats-grid" id="cats-grid"></div>
+      </section>
+
+      <div class="promo-strip">
+        <span class="ps-icon">🔥</span>
+        <div><strong>Muddatli to'lov</strong><small>3, 6 yoki 12 oyga bo'lib to'lang – 0% foiz!</small></div>
+        <span class="ps-badge">0%</span>
+      </div>
+
+      <section class="sec">
+        <div class="sec-head"><h3>Tavsiya etilgan</h3><a data-page="catalog">Barchasi</a></div>
+        <div class="prod-grid" id="featured-grid"></div>
+      </section>
+
+      <section class="sec">
+        <div class="sec-head"><h3>Yangi mahsulotlar</h3></div>
+        <div class="prod-scroll" id="new-scroll"></div>
+      </section>
+
+      <div class="info-cards">
+        <div class="info-card"><div class="ic-icon">🚚</div><strong>Tez yetkazish</strong><small>1-2 kun</small></div>
+        <div class="info-card"><div class="ic-icon">🛡️</div><strong>Kafolat</strong><small>12 oy</small></div>
+        <div class="info-card"><div class="ic-icon">💳</div><strong>Bo'lib to'lash</strong><small>3-6-12 oy</small></div>
+        <div class="info-card"><div class="ic-icon">↩️</div><strong>Qaytarish</strong><small>14 kun</small></div>
+      </div>
+    </div>
+
+    <!-- CATALOG -->
+    <div id="page-catalog" class="page">
+      <div class="page-hdr"><h2>Katalog</h2></div>
+      <div class="filter-tabs" id="filter-tabs"></div>
+      <div class="toolbar">
+        <span id="prod-count">0 ta mahsulot</span>
+        <select id="sort-sel">
+          <option value="default">Saralash</option>
+          <option value="price-asc">Arzon avval</option>
+          <option value="price-desc">Qimmat avval</option>
+        </select>
+      </div>
+      <div class="prod-grid" id="catalog-grid"></div>
+    </div>
+
+    <!-- PRODUCT DETAIL -->
+    <div id="page-product" class="page">
+      <button class="back-btn" id="back-btn">← Orqaga</button>
+      <div id="product-detail"></div>
+    </div>
+
+    <!-- CART -->
+    <div id="page-cart" class="page">
+      <div class="page-hdr"><h2>🛒 Savat</h2></div>
+      <div id="cart-content"></div>
+    </div>
+
+    <!-- FAVORITES -->
+    <div id="page-favorites" class="page">
+      <div class="page-hdr"><h2>❤️ Sevimlilar</h2></div>
+      <div id="favs-content"></div>
+    </div>
+
+    <!-- ORDERS -->
+    <div id="page-orders" class="page">
+      <div class="page-hdr"><h2>📋 Buyurtmalarim</h2></div>
+      <div id="orders-content"></div>
+    </div>
+
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bot-nav">
+    <button class="bn" data-page="home" id="bn-home">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+      <span>Asosiy</span>
+    </button>
+    <button class="bn" data-page="catalog" id="bn-catalog">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span>Katalog</span>
+    </button>
+    <button class="bn" data-page="favorites" id="bn-favs">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      <span>Sevimli</span>
+    </button>
+    <button class="bn" data-page="cart" id="bn-cart">
+      <div style="position:relative;display:inline-block">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        <span class="nav-badge" id="nav-cart-count">0</span>
+      </div>
+      <span>Savat</span>
+    </button>
+    <button class="bn" data-page="orders" id="bn-orders">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span>Buyurtma</span>
+    </button>
+  </nav>
+
+  <!-- TOAST -->
+  <div class="toast hidden" id="toast"></div>
+
+  <!-- ORDER MODAL -->
+  <div class="modal-bg hidden" id="modal-bg">
+    <div class="modal" id="modal">
+      <div class="modal-hdr">
+        <h3>Buyurtma berish</h3>
+        <button class="icon-btn" id="modal-close">✕</button>
+      </div>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

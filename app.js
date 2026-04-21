@@ -49,7 +49,6 @@ let state = {
   orders: JSON.parse(localStorage.getItem('orders')||'[]'),
   activeCat: 'barchasi',
   currentProduct: null,
-  bannerIdx: 0,
 };
 
 // UTILS
@@ -58,19 +57,12 @@ function saveCart(){localStorage.setItem('cart',JSON.stringify(state.cart));}
 function saveFavs(){localStorage.setItem('favs',JSON.stringify(state.favs));}
 function saveOrders(){localStorage.setItem('orders',JSON.stringify(state.orders));}
 function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.remove('hidden');
-  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.add('hidden'),2200);
+  const t=document.getElementById('liveToast');
+  document.getElementById('toast-msg').innerHTML = '✨ ' + msg;
+  const toast = new bootstrap.Toast(t);
+  toast.show();
 }
 function monthlyPrice(price,months){return Math.round(price/months);}
-
-// DRAWER — global scope
-function closeDrawer(){
-  const drawer=document.getElementById('drawer');
-  const overlay=document.getElementById('overlay');
-  if(drawer)drawer.classList.add('hidden'),drawer.classList.remove('open');
-  if(overlay)overlay.classList.add('hidden');
-}
 
 // NAVIGATE
 function goPage(name){
@@ -78,19 +70,34 @@ function goPage(name){
   const target=document.getElementById('page-'+name);
   if(!target)return;
   target.classList.add('active');
-  document.querySelectorAll('.bn').forEach(b=>b.classList.toggle('active',b.dataset.page===name));
-  document.querySelectorAll('.d-item').forEach(b=>b.classList.toggle('active',b.dataset.page===name));
+  
+  // Update navs
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===name));
+  document.querySelectorAll('.drawer-link').forEach(b=>b.classList.toggle('active',b.dataset.page===name));
+  
   state.prevPage=state.page;
   state.page=name;
+  
   if(name==='cart')renderCart();
   if(name==='favorites')renderFavs();
   if(name==='orders')renderOrders();
   if(name==='catalog')renderCatalog();
+  
   updateCartBadge();
-  closeDrawer();
-  const main=document.querySelector('.main');
-  if(main)main.scrollTop=0;
+  
+  // Close offcanvas if open
+  const drawerEl = document.getElementById('drawerMenu');
+  const offcanvas = bootstrap.Offcanvas.getInstance(drawerEl);
+  if(offcanvas) offcanvas.hide();
+
+  // Close search
+  const searchEl = document.getElementById('searchBar');
+  const searchCollapse = bootstrap.Collapse.getInstance(searchEl);
+  if(searchCollapse) searchCollapse.hide();
+
+  window.scrollTo(0,0);
 }
+
 function updateCartBadge(){
   const total=state.cart.reduce((s,i)=>s+i.qty,0);
   document.getElementById('cart-count').textContent=total;
@@ -101,15 +108,40 @@ function updateCartBadge(){
 
 // HOME
 function renderHome(){
+  renderBanners();
   renderCategories();
   renderFeatured();
   renderNew();
 }
+
+function renderBanners() {
+  document.getElementById('banner-track').innerHTML = `
+    <div class="banner-slide">
+      <div class="banner-content">
+        <span class="banner-tag">Yangi!</span>
+        <h3 class="text-white fw-bold mb-1">Eng Yaxshi Smartfonlar</h3>
+        <p class="text-white-50 mb-4 small">3-6-12 oy muddatli to'lov</p>
+        <button class="btn btn-primary rounded-pill px-4 btn-y" data-page="catalog" data-cat="smartfonlar">Ko'rish <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ms-1"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+      </div>
+      <svg class="bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect></svg>
+    </div>
+    <div class="banner-slide" style="background: linear-gradient(135deg, #001a1a, #111);">
+      <div class="banner-content">
+        <span class="banner-tag">Aksiya!</span>
+        <h3 class="text-white fw-bold mb-1">Noutbuklar Chegirmada</h3>
+        <p class="text-white-50 mb-4 small">Yetkazib berish bepul</p>
+        <button class="btn btn-primary rounded-pill px-4 btn-y" data-page="catalog" data-cat="noutbuklar">Ko'rish <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ms-1"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+      </div>
+      <svg class="bg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect></svg>
+    </div>
+  `;
+}
+
 function renderCategories(){
-  const g=document.getElementById('cats-grid');
+  const g=document.getElementById('cats-scroll');
   g.innerHTML=CATEGORIES.map(c=>`
     <div class="cat-item" onclick="filterCat('${c.id}')">
-      <div class="cat-icon">${c.icon}</div>
+      ${c.icon}
       <div class="cat-name">${c.name}</div>
     </div>`).join('');
 }
@@ -119,27 +151,30 @@ function filterCat(id){
 }
 function renderFeatured(){
   const items=PRODUCTS.filter(p=>p.old).slice(0,4);
-  document.getElementById('featured-grid').innerHTML=items.map(prodCard).join('');
+  document.getElementById('featured-grid').innerHTML=items.map(p=>`<div class="col-6">${prodCard(p)}</div>`).join('');
 }
 function renderNew(){
   const items=PRODUCTS.slice(0,6);
-  document.getElementById('new-scroll').innerHTML=items.map(prodCard).join('');
+  document.getElementById('new-scroll').innerHTML=items.map(p=>`<div style="width:160px; flex-shrink:0;">${prodCard(p)}</div>`).join('');
 }
 
 // PRODUCT CARD
 function prodCard(p){
   const isFav=state.favs.includes(p.id);
   const disc=p.old?Math.round((1-p.price/p.old)*100):0;
-  return`<div class="prod-card" onclick="openProduct(${p.id})">
-    ${disc?`<span class="sale-tag">-${disc}%</span>`:''}
-    <button class="fav-btn" onclick="event.stopPropagation();toggleFav(${p.id})" style="color:${isFav?'#ef4444':'#fff'}">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="${isFav?'currentColor':'none'}" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+  return`
+  <div class="custom-card" onclick="openProduct(${p.id})">
+    ${disc?`<span class="sale-badge">-${disc}%</span>`:''}
+    <button class="fav-btn-abs" onclick="event.stopPropagation();toggleFav(${p.id})" style="color:${isFav?'#dc3545':'#fff'}">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="${isFav?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
     </button>
-    <div class="prod-img">${p.icon}</div>
-    <div class="prod-body">
-      <div class="prod-name">${p.name}</div>
-      <div class="prod-price">${fmt(p.price)}</div>
-      ${p.old?`<div class="prod-old">${fmt(p.old)}</div>`:''}
+    <div class="card-img-placeholder">${p.icon}</div>
+    <div class="p-2 flex-grow-1 d-flex flex-column justify-content-between">
+      <div>
+        <div class="prod-name">${p.name}</div>
+        ${p.old?`<div class="prod-old">${fmt(p.old)}</div>`:''}
+        <div class="prod-price">${fmt(p.price)}</div>
+      </div>
       <div class="prod-month">oyiga ${fmt(monthlyPrice(p.price,12))} / 12 oy</div>
     </div>
   </div>`;
@@ -148,7 +183,7 @@ function prodCard(p){
 // CATALOG
 function renderCatalog(){
   const tabs=document.getElementById('filter-tabs');
-  tabs.innerHTML=CATEGORIES.map(c=>`<button class="ftab${c.id===state.activeCat?' active':''}" onclick="setCat('${c.id}')">${c.icon} ${c.name}</button>`).join('');
+  tabs.innerHTML=CATEGORIES.map(c=>`<button class="filter-tab${c.id===state.activeCat?' active':''}" onclick="setCat('${c.id}')">${c.name}</button>`).join('');
   applyFilter();
 }
 function setCat(id){
@@ -161,7 +196,7 @@ function applyFilter(){
   if(sort==='price-asc')items.sort((a,b)=>a.price-b.price);
   if(sort==='price-desc')items.sort((a,b)=>b.price-a.price);
   document.getElementById('prod-count').textContent=items.length+' ta mahsulot';
-  document.getElementById('catalog-grid').innerHTML=items.map(prodCard).join('');
+  document.getElementById('catalog-grid').innerHTML=items.map(p=>`<div class="col-6">${prodCard(p)}</div>`).join('');
 }
 
 // PRODUCT DETAIL
@@ -171,22 +206,34 @@ function openProduct(id){
   state.currentProduct=p;
   const isFav=state.favs.includes(p.id);
   const inCart=state.cart.find(c=>c.id===p.id);
-  const specs=Object.entries(p.specs).map(([k,v])=>`<div class="spec-row"><span>${k}</span><span>${v}</span></div>`).join('');
+  const specs=Object.entries(p.specs).map(([k,v])=>`<div class="d-flex justify-content-between py-2 border-bottom border-secondary small"><span class="text-muted">${k}</span><span class="fw-bold">${v}</span></div>`).join('');
   document.getElementById('product-detail').innerHTML=`
-    <div class="det-imgs">${p.icon}</div>
-    <div class="det-body">
-      <div class="det-cat">${CATEGORIES.find(c=>c.id===p.cat)?.name||''}</div>
-      <div class="det-name">${p.name}</div>
-      <div class="det-price">${fmt(p.price)}</div>
-      ${p.old?`<div class="det-old">${fmt(p.old)}</div>`:''}
-      <div class="det-months">
-        ${[3,6,12].map(m=>`<div class="month-chip"><small>${m} oy</small><strong>${fmt(monthlyPrice(p.price,m))}</strong></div>`).join('')}
+    <div class="card-img-placeholder mb-3 border-0 bg-transparent" style="font-size:7rem; color:#888;">${p.icon}</div>
+    <div class="px-3">
+      <div class="text-muted text-uppercase small fw-bold mb-1 tracking-wide">${CATEGORIES.find(c=>c.id===p.cat)?.name||''}</div>
+      <h4 class="fw-bold mb-3">${p.name}</h4>
+      <h2 class="text-primary fw-bolder mb-1">${fmt(p.price)}</h2>
+      ${p.old?`<div class="text-muted text-decoration-line-through mb-3">${fmt(p.old)}</div>`:''}
+      
+      <div class="d-flex gap-2 mb-4">
+        ${[3,6,12].map(m=>`
+          <div class="flex-fill bg-surface border border-secondary rounded-3 p-2 text-center">
+            <small class="text-muted d-block">${m} oy</small>
+            <strong class="text-primary small">${fmt(monthlyPrice(p.price,m))}</strong>
+          </div>
+        `).join('')}
       </div>
-      <div class="det-desc">${p.desc}</div>
-      <div class="det-specs">${specs}</div>
-      <div class="det-actions">
-        <button class="btn-cart-det" onclick="addToCart(${p.id})">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      
+      <p class="text-white-50 mb-4 lh-lg small">${p.desc}</p>
+      
+      <div class="bg-surface rounded-4 p-3 mb-4 border border-secondary">
+        <h6 class="fw-bold mb-3">Xususiyatlari</h6>
+        ${specs}
+      </div>
+      
+      <div class="d-flex gap-2">
+        <button class="btn btn-primary flex-grow-1 rounded-pill fw-bold d-flex align-items-center justify-content-center gap-2" onclick="addToCart(${p.id})">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
           ${inCart?'Savatda':'Savatga qo\'shish'}
         </button>
         <button class="btn-fav-det${isFav?' liked':''}" id="det-fav-btn" onclick="toggleFav(${p.id});updateDetFav()">
@@ -214,9 +261,10 @@ function addToCart(id){
   if(ex)ex.qty++;
   else state.cart.push({id,qty:1});
   saveCart();updateCartBadge();
-  showToast('✅ Savatga qo\'shildi!');
+  showToast("Savatga qo'shildi!");
   renderHome();
   if(state.page==='catalog')renderCatalog();
+  if(state.page==='product')openProduct(state.currentProduct.id);
 }
 function changeQty(id,d){
   const ex=state.cart.find(c=>c.id===id);
@@ -232,38 +280,44 @@ function removeFromCart(id){
 function renderCart(){
   const el=document.getElementById('cart-content');
   if(!state.cart.length){
-    el.innerHTML=`<div class="empty-state"><div class="es-icon">🛒</div><h3>Savat bo'sh</h3><p>Mahsulotlarni savatga qo'shing</p></div>`;return;
+    el.innerHTML=`<div class="text-center text-muted p-5 mt-4"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-3"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><br><h5>Savat bo'sh</h5></div>`;return;
   }
   const total=state.cart.reduce((s,i)=>{const p=PRODUCTS.find(x=>x.id===i.id);return s+(p?p.price*i.qty:0);},0);
   const delivery=total>500000?0:30000;
-  el.innerHTML=state.cart.map(i=>{
+  
+  let itemsHtml = state.cart.map(i=>{
     const p=PRODUCTS.find(x=>x.id===i.id);if(!p)return'';
-    return`<div class="cart-item">
-      <div class="ci-emoji">${p.icon}</div>
-      <div class="ci-info">
-        <div class="ci-name">${p.name}</div>
-        <div class="ci-price">${fmt(p.price)}</div>
-        <div class="ci-qty">
+    return`
+    <div class="d-flex align-items-center gap-3 bg-surface p-3 mx-3 mb-3 rounded-4 border border-secondary">
+      <div class="text-muted" style="width:48px;height:48px;">${p.icon}</div>
+      <div class="flex-grow-1 min-w-0">
+        <div class="text-truncate small fw-bold mb-1">${p.name}</div>
+        <div class="text-primary fw-bold mb-2">${fmt(p.price)}</div>
+        <div class="d-flex align-items-center gap-3">
           <button class="qty-btn" onclick="changeQty(${p.id},-1)">−</button>
-          <span class="qty-num">${i.qty}</span>
+          <span class="fw-bold">${i.qty}</span>
           <button class="qty-btn" onclick="changeQty(${p.id},1)">+</button>
         </div>
       </div>
-      <button class="ci-del" onclick="removeFromCart(${p.id})">🗑</button>
+      <button class="btn btn-link text-danger p-0 align-self-start" onclick="removeFromCart(${p.id})">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+      </button>
     </div>`;
-  }).join('')+
-  `<div class="cart-total">
-    <div class="ct-row"><span>Mahsulotlar</span><span>${fmt(total)}</span></div>
-    <div class="ct-row"><span>Yetkazib berish</span><span>${delivery?fmt(delivery):'Bepul'}</span></div>
-    <div class="ct-row total"><span>Jami</span><span>${fmt(total+delivery)}</span></div>
-    <button class="btn-order" onclick="openOrderModal()">📋 Buyurtma berish</button>
+  }).join('');
+  
+  el.innerHTML = itemsHtml + `
+  <div class="bg-surface p-4 mx-3 mb-3 rounded-4 border border-secondary mt-2">
+    <div class="d-flex justify-content-between mb-2 small text-muted"><span>Mahsulotlar</span><span>${fmt(total)}</span></div>
+    <div class="d-flex justify-content-between mb-3 small text-muted"><span>Yetkazish</span><span>${delivery?fmt(delivery):'Bepul'}</span></div>
+    <div class="d-flex justify-content-between pt-3 border-top border-secondary fw-bold fs-5 text-primary"><span>Jami</span><span>${fmt(total+delivery)}</span></div>
+    <button class="btn btn-primary w-100 rounded-pill mt-4 fw-bold p-3" onclick="openOrderModal()">Buyurtma berish</button>
   </div>`;
 }
 
 // FAVORITES
 function toggleFav(id){
   if(state.favs.includes(id))state.favs=state.favs.filter(f=>f!==id);
-  else{state.favs.push(id);showToast('❤️ Sevimlilarga qo\'shildi!');}
+  else{state.favs.push(id);showToast("Sevimlilarga qo'shildi!");}
   saveFavs();
   if(state.page==='favorites')renderFavs();
   if(state.page==='home')renderHome();
@@ -273,43 +327,74 @@ function renderFavs(){
   const el=document.getElementById('favs-content');
   const items=PRODUCTS.filter(p=>state.favs.includes(p.id));
   if(!items.length){
-    el.innerHTML=`<div class="empty-state"><div class="es-icon">❤️</div><h3>Sevimlilar bo'sh</h3><p>Yoqqan mahsulotlarni saqlang</p></div>`;return;
+    el.innerHTML=`<div class="text-center text-muted p-5 mt-4"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-3"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><br><h5>Sevimlilar bo'sh</h5></div>`;return;
   }
-  el.innerHTML=`<div class="prod-grid" style="padding:14px">${items.map(prodCard).join('')}</div>`;
+  el.innerHTML=items.map(p=>`<div class="col-6">${prodCard(p)}</div>`).join('');
 }
 
 // ORDERS
 function openOrderModal(){
   const total=state.cart.reduce((s,i)=>{const p=PRODUCTS.find(x=>x.id===i.id);return s+(p?p.price*i.qty:0);},0);
   document.getElementById('modal-body').innerHTML=`
-    <div class="form-group"><label>Ismingiz</label><input id="o-name" placeholder="Ism Familiya" type="text"/></div>
-    <div class="form-group"><label>Telefon raqam</label><input id="o-phone" placeholder="+998 __ ___ __ __" type="tel"/></div>
-    <div class="form-group"><label>Manzil</label><input id="o-addr" placeholder="Toshkent, ko'cha, uy..." type="text"/></div>
-    <div class="form-group"><label>To'lov usuli</label>
-      <select id="o-pay"><option value="naqd">Naqd pul</option><option value="karta">Bank kartasi</option><option value="muddatli">Muddatli to'lov</option></select>
+    <div class="mb-3">
+      <label class="form-label">Ismingiz</label>
+      <input id="o-name" class="form-control" placeholder="Ism Familiya" type="text"/>
     </div>
-    <div id="inst-wrap" class="hidden">
-      <label style="font-size:.82rem;color:#888;margin-bottom:6px;display:block">Muddatni tanlang</label>
-      <div class="installment-opts">
-        ${[3,6,12].map(m=>`<div class="inst-opt${m===12?' active':''}" onclick="selInst(${m},${total})"><small>${m} oy</small><strong>${fmt(Math.round(total/m))}</strong></div>`).join('')}
+    <div class="mb-3">
+      <label class="form-label">Telefon raqam</label>
+      <input id="o-phone" class="form-control" placeholder="+998 __ ___ __ __" type="tel"/>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Manzil</label>
+      <input id="o-addr" class="form-control" placeholder="Toshkent, ko'cha, uy..." type="text"/>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">To'lov usuli</label>
+      <select id="o-pay" class="form-select">
+        <option value="naqd">Naqd pul</option>
+        <option value="karta">Bank kartasi</option>
+        <option value="muddatli">Muddatli to'lov</option>
+      </select>
+    </div>
+    <div id="inst-wrap" class="d-none mb-3">
+      <label class="form-label">Muddatni tanlang</label>
+      <div class="d-flex gap-2">
+        ${[3,6,12].map(m=>`
+          <div class="flex-fill bg-surface border border-secondary rounded-3 p-2 text-center inst-opt" onclick="selInst(this)" style="cursor:pointer">
+            <small class="text-muted d-block">${m} oy</small>
+            <strong class="text-primary small">${fmt(Math.round(total/m))}</strong>
+          </div>
+        `).join('')}
       </div>
     </div>
-    <div class="form-group"><label>Izoh</label><textarea id="o-note" placeholder="Qo'shimcha ma'lumot..."></textarea></div>
-    <div class="ct-row total" style="margin-bottom:14px"><span>Jami</span><strong style="color:#FACC15">${fmt(total)}</strong></div>
-    <button class="btn-order" onclick="submitOrder()">✅ Tasdiqlash</button>`;
+    <div class="mb-4">
+      <label class="form-label">Izoh</label>
+      <textarea id="o-note" class="form-control" rows="2" placeholder="Qo'shimcha ma'lumot..."></textarea>
+    </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <span class="fw-bold">Jami:</span>
+      <strong class="text-primary fs-5">${fmt(total)}</strong>
+    </div>
+    <button class="btn btn-primary w-100 rounded-pill p-3 fw-bold" onclick="submitOrder()">✅ Tasdiqlash</button>`;
+    
   document.getElementById('o-pay').addEventListener('change',function(){
-    document.getElementById('inst-wrap').classList.toggle('hidden',this.value!=='muddatli');
+    document.getElementById('inst-wrap').classList.toggle('d-none', this.value !== 'muddatli');
   });
-  document.getElementById('modal-bg').classList.remove('hidden');
+  
+  const offcanvas = new bootstrap.Offcanvas(document.getElementById('orderModal'));
+  offcanvas.show();
 }
-function selInst(m,total){
-  document.querySelectorAll('.inst-opt').forEach(o=>o.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+
+function selInst(el){
+  document.querySelectorAll('.inst-opt').forEach(o=>{o.classList.remove('border-primary'); o.style.background='var(--bs-secondary-bg)';});
+  el.classList.add('border-primary');
+  el.style.background='rgba(250,204,21,0.1)';
 }
+
 function submitOrder(){
   const name=document.getElementById('o-name').value.trim();
   const phone=document.getElementById('o-phone').value.trim();
-  if(!name||!phone){showToast('⚠️ Ism va telefon kiriting!');return;}
+  if(!name||!phone){showToast('Ism va telefon kiriting!');return;}
   const order={
     id:'#'+Math.floor(10000+Math.random()*90000),
     date:new Date().toLocaleDateString('uz-UZ'),
@@ -320,20 +405,27 @@ function submitOrder(){
   state.orders.unshift(order);
   state.cart=[];
   saveCart();saveOrders();updateCartBadge();
-  document.getElementById('modal-bg').classList.add('hidden');
-  showToast('🎉 Buyurtma qabul qilindi!');
+  
+  const modal = bootstrap.Offcanvas.getInstance(document.getElementById('orderModal'));
+  if(modal) modal.hide();
+  
+  showToast('Buyurtma qabul qilindi!');
   goPage('orders');
 }
+
 function renderOrders(){
   const el=document.getElementById('orders-content');
   if(!state.orders.length){
-    el.innerHTML=`<div class="empty-state"><div class="es-icon">📋</div><h3>Buyurtmalar yo'q</h3><p>Birinchi buyurtmangizni bering</p></div>`;return;
+    el.innerHTML=`<div class="text-center text-muted p-5 mt-4"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-3"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><br><h5>Buyurtmalar yo'q</h5></div>`;return;
   }
   el.innerHTML=state.orders.map(o=>`
-    <div class="order-card">
-      <div class="oc-head"><span class="oc-id">${o.id} · ${o.date}</span><span class="oc-status">${o.status}</span></div>
-      <div class="oc-items">${o.items.join(', ')}</div>
-      <div class="oc-total">${fmt(o.total)}</div>
+    <div class="bg-surface rounded-4 p-3 mb-3 border border-secondary border-start border-primary border-4">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="small text-muted">${o.id} · ${o.date}</span>
+        <span class="badge bg-primary text-dark rounded-pill">${o.status}</span>
+      </div>
+      <div class="small text-white-50 mb-2">${o.items.join(', ')}</div>
+      <div class="fw-bold text-primary">${fmt(o.total)}</div>
     </div>`).join('');
 }
 
@@ -341,92 +433,50 @@ function renderOrders(){
 function doSearch(q){
   if(!q.trim()){renderCatalog();return;}
   const results=PRODUCTS.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())||p.brand.toLowerCase().includes(q.toLowerCase()));
-  document.getElementById('catalog-grid').innerHTML=results.length?results.map(prodCard).join(''):`<div class="empty-state" style="grid-column:span 2"><div class="es-icon">🔍</div><h3>Topilmadi</h3><p>"${q}" bo'yicha hech narsa yo'q</p></div>`;
+  document.getElementById('catalog-grid').innerHTML=results.length?results.map(p=>`<div class="col-6">${prodCard(p)}</div>`).join(''):`<div class="col-12 text-center text-muted py-5"><p>"${q}" bo'yicha hech narsa topilmadi</p></div>`;
   document.getElementById('prod-count').textContent=results.length+' ta natija';
-}
-
-// BANNER SLIDER
-function initBanner(){
-  let t=setInterval(()=>{
-    state.bannerIdx=(state.bannerIdx+1)%3;
-    document.getElementById('banner-track').style.transform=`translateX(-${state.bannerIdx*100}%)`;
-    document.querySelectorAll('.bdot').forEach((d,i)=>d.classList.toggle('active',i===state.bannerIdx));
-  },3500);
 }
 
 // EVENTS
 document.addEventListener('DOMContentLoaded',()=>{
-
   renderHome();
   updateCartBadge();
-  initBanner();
 
-  // Bottom nav
-  document.querySelectorAll('.bn').forEach(el=>{
-    el.addEventListener('click',function(){
-      const pg=this.dataset.page;
-      if(pg)goPage(pg);
-    });
-  });
-
-  // Drawer nav items
-  document.querySelectorAll('.d-item').forEach(el=>{
-    el.addEventListener('click',function(){
-      const pg=this.dataset.page;
-      if(pg)goPage(pg);
-    });
-  });
-
-  // Banner buttons
-  document.querySelectorAll('.btn-y[data-page]').forEach(el=>{
-    el.addEventListener('click',function(){
-      const pg=this.dataset.page;
-      const cat=this.dataset.cat;
-      if(cat)state.activeCat=cat;
-      if(pg)goPage(pg);
-    });
-  });
-
-  // Drawer toggle
-  document.getElementById('menu-btn').onclick=()=>{
-    const drawer=document.getElementById('drawer');
-    const overlay=document.getElementById('overlay');
-    drawer.classList.toggle('hidden');
-    drawer.classList.toggle('open');
-    overlay.classList.toggle('hidden');
-  };
-  document.getElementById('drawer-close').onclick=closeDrawer;
-  document.getElementById('overlay').onclick=closeDrawer;
-
-  // Logo → home
-  document.getElementById('logo-btn').onclick=()=>goPage('home');
-
-  // Cart btn
-  document.getElementById('cart-btn').onclick=()=>goPage('cart');
-
-  // Search
-  document.getElementById('search-btn').onclick=()=>{
-    const wrap=document.getElementById('search-wrap');
-    wrap.classList.toggle('hidden');
-    if(!wrap.classList.contains('hidden')){
-      document.getElementById('search-input').focus();
-      if(state.page!=='catalog')goPage('catalog');
+  // Banner buttons delegation
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.btn-y');
+    if(btn) {
+      const pg = btn.dataset.page;
+      const cat = btn.dataset.cat;
+      if(cat) state.activeCat = cat;
+      if(pg) goPage(pg);
     }
-  };
-  document.getElementById('search-close').onclick=()=>{
-    document.getElementById('search-wrap').classList.add('hidden');
-    document.getElementById('search-input').value='';
-    renderCatalog();
-  };
-  document.getElementById('search-input').addEventListener('input',function(){doSearch(this.value);});
+  });
+
+  document.querySelectorAll('.nav-btn').forEach(el=>{
+    el.addEventListener('click',function(){
+      const pg=this.dataset.page;
+      if(pg)goPage(pg);
+    });
+  });
+
+  document.querySelectorAll('.drawer-link').forEach(el=>{
+    el.addEventListener('click',function(){
+      const pg=this.dataset.page;
+      if(pg)goPage(pg);
+    });
+  });
+
+  // Search input
+  const sInp = document.getElementById('search-input');
+  if(sInp) {
+    sInp.addEventListener('input',function(){doSearch(this.value);});
+    sInp.addEventListener('focus', function() {
+      if(state.page !== 'catalog') goPage('catalog');
+    });
+  }
 
   // Sort
-  document.getElementById('sort-sel').addEventListener('change',applyFilter);
-
-  // Back btn
-  document.getElementById('back-btn').onclick=()=>goPage(state.prevPage||'home');
-
-  // Modal
-  document.getElementById('modal-close').onclick=()=>document.getElementById('modal-bg').classList.add('hidden');
-  document.getElementById('modal-bg').onclick=function(e){if(e.target===this)this.classList.add('hidden');};
+  const sSel = document.getElementById('sort-sel');
+  if(sSel) sSel.addEventListener('change',applyFilter);
 });
